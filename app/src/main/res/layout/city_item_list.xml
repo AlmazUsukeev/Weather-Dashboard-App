@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+      <LinearLayout
+          android:layout_marginBottom="17.5dp"
+          android:layout_marginTop="17.5dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+          <TextView
+              android:id="@+id/tv_title"
+              android:layout_weight="1"
+
+              tools:text = "london"
+              android:layout_width="0dp"
+              android:gravity="center_vertical"
+              android:textColor="@color/white"
+              android:textSize="18sp"
+              android:fontFamily="@font/roboto"
+              android:layout_height="match_parent">
+          </TextView>
+
+          <ImageButton
+              android:id="@+id/ib_save"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:backgroundTint="@android:color/transparent"
+              android:src="@drawable/add_plus_svgrepo_com"
+              app:tint="@color/white"
+              tools:ignore="SpeakableTextPresentCheck">
+
+          </ImageButton>
+      </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#96A1F8">
+
+    </View>
+</LinearLayout>
