@@ -2,7 +2,6 @@ package com.example.retrofittask.screens
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.provider.ContactsContract.Data
 import android.view.View
 import android.widget.SearchView
 import android.widget.Toast
@@ -12,8 +11,7 @@ import com.example.retrofittask.Units
 import com.example.retrofittask.adapter.CityListAdapter
 import com.example.retrofittask.database.Database
 import com.example.retrofittask.databinding.ActivityAddCityBinding
-import com.example.retrofittask.databinding.ActivityMainBinding
-import com.example.retrofittask.model.CityModel
+import com.example.retrofittask.models.CityModel
 import com.example.retrofittask.retrofit.RetrofitInstance
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -41,7 +39,6 @@ class AddCity : AppCompatActivity(),CityListAdapter.ItemOnClick {
 
         binding.searchView.setOnQueryTextListener(object :SearchView.OnQueryTextListener{
             override fun onQueryTextSubmit(query: String?): Boolean {
-
                 return true
             }
 
@@ -63,10 +60,10 @@ class AddCity : AppCompatActivity(),CityListAdapter.ItemOnClick {
     }
 
     private suspend fun searchCity(city:String) {
-        val response  = RetrofitInstance.api.getCurrentWeather(city,"metric", Units.API_KEY)
+        val response  = RetrofitInstance.api.getWeatherForeCast(city,"metric", Units.API_KEY)
         if (response.isSuccessful&&response!=null){
             val weatherResponse = response.body()
-            val list = listOf<CityModel>(CityModel(null,weatherResponse!!.name.toString(),false))
+            val list = listOf<CityModel>(CityModel(null,weatherResponse!!.city.name,false))
             weatherResponse.let {
                    adapter.submitList(list)
             }

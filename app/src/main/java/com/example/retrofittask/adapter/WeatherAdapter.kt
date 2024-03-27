@@ -7,21 +7,24 @@ import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
-import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+
 import com.example.retrofittask.R
-import com.example.retrofittask.model.CurrentWeather
 import com.squareup.picasso.Picasso
+import java.text.SimpleDateFormat
+
 import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
+import java.util.Date
+import java.util.TimeZone
 
 
-class WeatherAdapter(val itemOnClickDelete: ItemOnClickDelete): ListAdapter<CurrentWeather,WeatherAdapter.WeatherViewHolder>(Comparator()) {
+class WeatherAdapter(val itemOnClickDelete: ItemOnClickDelete): ListAdapter<com.example.retrofittask.models.ForeCast,WeatherAdapter.WeatherViewHolder>(Comparator()) {
     class WeatherViewHolder(view: View):RecyclerView.ViewHolder(view) {
         val tvTemp:TextView = view.findViewById(R.id.tv_temp)
         val tvTitle:TextView = view.findViewById(R.id.tv_name)
@@ -38,59 +41,63 @@ class WeatherAdapter(val itemOnClickDelete: ItemOnClickDelete): ListAdapter<Curr
 
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
+
     override fun onBindViewHolder(holder: WeatherViewHolder, position: Int) {
-            val cityWeather = getItem(position)
-            val time = cityWeather.dt!!.toLong()
-            val localTimeString = convertUnixTimeToTimeAMPM(time)
-            val i = cityWeather.weather?.get(0)!!.icon
-            val localDateString = convertUnixTimeToDate(time)
-            val weather = cityWeather.weather?.get(0)!!.main
-                holder.tvTemp.text = "${cityWeather.main!!.temp.toInt()}"
-            holder.tvTitle.text = cityWeather.name
-            holder.metric.text = "°c"
-            holder.tvTime.text = localTimeString
+        val item = getItem(position)
+        holder.tvTemp.text = item.list[getWeatherTempNow(item.city.timezone,item.city.name)].main.temp.toInt().toString()
+        holder.tvTitle.text = item.city.name
+        val timeFormat = SimpleDateFormat("hh:mm a")
+        val time  = timeFormat.format(getTimeCity(item.city.timezone,item.city.name))
+        holder.tvTime.text = time
+        val weather = item.list[getWeatherTempNow(item.city.timezone,item.city.name)].weather[0].main
             holder.ibDelete.setOnClickListener {
-                itemOnClickDelete.deleteFromFavorite(cityWeather.name.toString())
+                itemOnClickDelete.deleteFromFavorite(item.city.name)
             }
             holder.tvDescription.text = weather
         when (weather) {
             "Clouds" -> holder.icon.setImageResource(R.drawable.sunc)
             "Clear" -> holder.icon.setImageResource(R.drawable.sun)
             "Rain" -> holder.icon.setImageResource(R.drawable.frame)
-            else->holder.icon.setImageResource(R.drawable.frame)
+            else->holder.icon.setImageResource(R.drawable.sunc)
         }
-
     }
-
-    class Comparator():DiffUtil.ItemCallback<CurrentWeather>(){
-        override fun areItemsTheSame(oldItem: CurrentWeather, newItem: CurrentWeather): Boolean {
-            return oldItem.id == newItem.id
+    class Comparator():DiffUtil.ItemCallback<com.example.retrofittask.models.ForeCast>(){
+        override fun areItemsTheSame(oldItem: com.example.retrofittask.models.ForeCast, newItem: com.example.retrofittask.models.ForeCast): Boolean {
+            return oldItem.city.id == newItem.city.id
         }
-
-        override fun areContentsTheSame(oldItem: CurrentWeather, newItem: CurrentWeather): Boolean {
+        override fun areContentsTheSame(oldItem: com.example.retrofittask.models.ForeCast, newItem: com.example.retrofittask.models.ForeCast): Boolean {
             return  oldItem == newItem
         }
-
     }
-    @RequiresApi(Build.VERSION_CODES.O)
-    fun convertUnixTimeToTimeAMPM(unixTime:Long):String{
-        val instant =Instant.ofEpochSecond(unixTime)
-        val localDateTime = LocalDateTime.ofInstant(instant, ZoneId.systemDefault())
-        val formatter = DateTimeFormatter.ofPattern("hh:mm a")
-        return localDateTime.format(formatter)
-    }
-
-    @RequiresApi(Build.VERSION_CODES.O)
-    fun convertUnixTimeToDate(unixTime: Long): String {
-        val instant = Instant.ofEpochSecond(unixTime)
-        val localDateTime = LocalDateTime.ofInstant(instant, ZoneId.systemDefault())
-
-        val formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy")
-        return localDateTime.format(formatter)
-    }
-
     interface ItemOnClickDelete{
         fun deleteFromFavorite(city:String)
     }
+
+    private fun getWeatherTempNow(timeZone: Int, cityName: String): Int {
+        val timeFormat = SimpleDateFormat("HH")
+        val time  = timeFormat.format(getTimeCity(timeZone,cityName))
+        val index = when(time.toInt()){
+            in 0..6 -> 0
+            in 6..9 ->1
+            in 12..14->2
+            in 15..17->3
+            in 18..20->4
+            else -> 5
+        }
+        return index
+    }
+    fun getTimeCity(timeZone:Int,cityName:String):Date{
+        val timezoneOffset = timeZone
+        val utcTime = System.currentTimeMillis() / 1000
+        val cityDate = Date(utcTime * 1000)
+        val isDst = TimeZone.getTimeZone(cityName).inDaylightTime(cityDate)
+        val cityTime = if (isDst) {
+            utcTime + timezoneOffset + 3600
+        } else {
+            utcTime + timezoneOffset
+        }
+        val finalCityDate = Date(cityTime * 1000)
+        return finalCityDate
+    }
+
 }

@@ -8,9 +8,8 @@ import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.example.retrofittask.R
-import com.example.retrofittask.model.CityModel
+import com.example.retrofittask.models.CityModel
 
 class CityListAdapter(val itemOnClick: ItemOnClick):ListAdapter<CityModel,CityListAdapter.CityListViewHolder>(Comparator()) {
     class CityListViewHolder(view: View):RecyclerView.ViewHolder(view) {
@@ -43,7 +42,7 @@ class CityListAdapter(val itemOnClick: ItemOnClick):ListAdapter<CityModel,CityLi
 
     }
     interface ItemOnClick{
-        fun onClick(city:CityModel)
+        fun onClick(city: CityModel)
     }
 
 }
