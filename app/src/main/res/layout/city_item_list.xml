@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_height="wrap_content"
     android:orientation="vertical"
+    tools:background="@color/_7ea9e9"
     xmlns:app="http://schemas.android.com/apk/res-auto">
       <LinearLayout
           android:layout_marginBottom="17.5dp"

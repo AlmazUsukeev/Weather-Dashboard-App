@@ -62,4 +62,6 @@ dependencies {
     kapt("androidx.room:room-compiler:$room_version")
 //picasso
     implementation ("com.squareup.picasso:picasso:2.8")
+
+    implementation("com.tbuonomo:dotsindicator:4.3")
 }

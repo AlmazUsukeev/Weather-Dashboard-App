@@ -64,13 +64,11 @@ class AddCity : AppCompatActivity(),CityListAdapter.ItemOnClick {
 
     private suspend fun searchCity(city:String) {
         val response  = RetrofitInstance.api.getCurrentWeather(city,"metric", Units.API_KEY)
-        if (response.isSuccessful){
+        if (response.isSuccessful&&response!=null){
             val weatherResponse = response.body()
-            val list = listOf<CityModel>(CityModel(null,city,false))
+            val list = listOf<CityModel>(CityModel(null,weatherResponse!!.name.toString(),false))
             weatherResponse.let {
-                if (it != null) {
                    adapter.submitList(list)
-                }
             }
 
         }

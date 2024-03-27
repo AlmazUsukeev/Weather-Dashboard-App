@@ -46,7 +46,6 @@ class WeatherAdapter(val itemOnClickDelete: ItemOnClickDelete): ListAdapter<Curr
             val i = cityWeather.weather?.get(0)!!.icon
             val localDateString = convertUnixTimeToDate(time)
             val weather = cityWeather.weather?.get(0)!!.main
-
                 holder.tvTemp.text = "${cityWeather.main!!.temp.toInt()}"
             holder.tvTitle.text = cityWeather.name
             holder.metric.text = "°c"

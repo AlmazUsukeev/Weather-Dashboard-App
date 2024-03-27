@@ -11,6 +11,7 @@ import androidx.lifecycle.lifecycleScope
 import com.example.retrofittask.Units
 import com.example.retrofittask.adapter.WeatherAdapter
 import com.example.retrofittask.database.Database
+
 import com.example.retrofittask.databinding.ActivityMainBinding
 import com.example.retrofittask.model.CityModel
 import com.example.retrofittask.model.CurrentWeather
@@ -19,7 +20,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity(),WeatherAdapter.ItemOnClickDelete {
-
     val cityList: List<CityModel> = listOf(
         CityModel(id = null, name = "Tokyo", isFavorite = false),
         CityModel(id = null, name = "New York", isFavorite = true),
@@ -36,16 +36,15 @@ class MainActivity : AppCompatActivity(),WeatherAdapter.ItemOnClickDelete {
         CityModel(id = null, name = "Rome", isFavorite = false),
         CityModel(id = null, name = "Sydney", isFavorite = false)
     )
-
     lateinit var binding:ActivityMainBinding
     lateinit var adapter:WeatherAdapter
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding =ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
-        window.decorView.systemUiVisibility =View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
         val db = Database.getDatabase(this)
+        window.decorView.systemUiVisibility =View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+
         adapter = WeatherAdapter(this)
         binding.rvFavoriteCity.adapter = adapter
 
@@ -56,7 +55,8 @@ class MainActivity : AppCompatActivity(),WeatherAdapter.ItemOnClickDelete {
             }
         })
         binding.floatingActionButton.setOnClickListener {
-            Toast.makeText(this, "не успел!", Toast.LENGTH_SHORT).show()
+           val intent = Intent(this,DetailsWeather::class.java)
+            startActivity(intent)
         }
 
         db.cityDao().getAllCity().observe(this, Observer {city->
@@ -88,20 +88,15 @@ class MainActivity : AppCompatActivity(),WeatherAdapter.ItemOnClickDelete {
             }
         }
         return weatherData
-
-
     }
 
     override fun deleteFromFavorite(city: String) {
         val db = Database.getDatabase(this)
-
-
+        Toast.makeText(this, city, Toast.LENGTH_SHORT).show()
         lifecycleScope.launch(Dispatchers.IO){
-
             val upCity = db.cityDao().findCityByName(city)
             if(upCity != null){
-                upCity.isFavorite = false
-                db.cityDao().updateCity(upCity)
+                db.cityDao().updateIsFavorite(upCity.name)
             }
 
         }
