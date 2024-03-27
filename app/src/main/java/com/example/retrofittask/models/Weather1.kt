@@ -1,6 +1,6 @@
-package com.example.retrofittask.model
+package com.example.retrofittask.models
 
-data class Weather(
+data class Weather1(
     val description: String,
     val icon: String,
     val id: Int,

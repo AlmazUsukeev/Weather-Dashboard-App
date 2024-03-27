@@ -1,4 +1,4 @@
-package com.example.retrofittask.model
+package com.example.retrofittask.models
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
